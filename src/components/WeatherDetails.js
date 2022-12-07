@@ -7,7 +7,6 @@ function WeatherDetails({temp, humidity,
   speed,
   country,
   sunset}) {
-
     const [weatherState, setWeatherState] = useState("");
 
     useEffect(() => {
@@ -57,7 +56,7 @@ function WeatherDetails({temp, humidity,
                       </div>
                     </div>
                   </div>
-                  <div className='date'>{new Date().toLocaleString("en-UK")}</div>
+
                   <div className='extra-temp'>
                     <div className='temp-info-minmax'>
                       <div className='two-sided-section'>

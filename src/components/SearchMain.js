@@ -7,8 +7,11 @@ function SearchMain() {
     const [searchTerm, setSearchTerm] = useState('Kharkiv')
     const [tempInfo, setTempInfo] = useState({})
     const [forecastData, setForecastData] = useState({})
-    let lon = 0;
-    let lat = 0;
+    const [nameData, setNameData] = useState({})
+    const [countryData, setCountryData] = useState({})
+    const [lonData, setLonData] = useState({})
+    const [latData, setLatData] = useState({})
+
 
     const getWeatherDetails  = async() => {
 
@@ -19,36 +22,47 @@ function SearchMain() {
         const {temp, humidity, pressure} = data.main;
         const {main: weatherType} = data.weather[0];
         const {name} = data;
+        setNameData(name)
         const {speed} = data.wind;
-        const {country, sunset} = data.sys;
-        lon = data.coord.lon;
-        lat = data.coord.lat;
-        const myNewWeatherInfo = {
-          temp,
-          humidity,
-          pressure,
-          weatherType,
-          name,
-          speed,
-          country,
-          sunset
-        }
+        const country = data.sys.country;
+        setCountryData(country)
+        let lon = data.coord.lon;
+        setLonData(lon)
+        let lat = data.coord.lat;
+        setLatData(lat)
 
-        getForecastDetails(lon, lat)
-        setTempInfo(myNewWeatherInfo)
 
       } catch (error) {
         //console.log(error)
       }
     }
 
-    const getForecastDetails = async(lon, lat) => {
-
+    const getForecastDetails = async() => {
+        await getWeatherDetails()
       try {
-            let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,minutely,current&units=metric&appid=edfbb71f85e1fcfb2f25c50ebd685682`
+            console.log(latData, lonData)
+            let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${latData}&lon=${lonData}&exclude=hourly,minutely,current&units=metric&appid=edfbb71f85e1fcfb2f25c50ebd685682`
             let res = await fetch(url);
             let forecast_data = await res.json();
+            let forecast = forecast_data.daily;
+            const {main: weatherType} = forecast[0].weather[0];
+            const temp = forecast[0].temp;
+            const humidity = forecast[0].humidity;
+            const pressure = forecast[0].pressure;
+            const speed = forecast[0].wind_speed;
+            const sunset = forecast[0].sunset;
 
+            const myNewWeatherInfo = {
+              temp,
+              humidity,
+              pressure,
+              weatherType,
+              nameData,
+              speed,
+              countryData,
+              sunset
+            }
+            setTempInfo(myNewWeatherInfo)
             setForecastData(forecast_data)
         } catch (error) {
             console.log(error)
@@ -56,12 +70,12 @@ function SearchMain() {
     }
 
     useEffect(() =>{
-      getWeatherDetails()
-    }, [])
+      getForecastDetails()
+    }, [latData])
 
     const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-        getWeatherDetails()
+        getForecastDetails()
     }
   }
 
@@ -70,17 +84,12 @@ function SearchMain() {
        <div className='wrap'>
       <div className='search'>
           <input className="searchTerm" onKeyDown={handleKeyDown} type='search' placeholder='Type city' id='search' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
-      <button className='searchButton' onClick={getWeatherDetails}>Search</button>
+      <button className='searchButton' onClick={getForecastDetails}>Search</button>
       </div>
     </div>
        <div className="days">
-        <Forecast forecast={forecastData.daily[0]}/>
-        <Forecast forecast={forecastData.daily[1]}/>
-        <Forecast forecast={forecastData.daily[2]}/>
-        <Forecast forecast={forecastData.daily[3]}/>
-        <Forecast forecast={forecastData.daily[4]}/>
            </div>
-    <WeatherDetails {...tempInfo} /></>
+   <WeatherDetails {...tempInfo} /></>
   )
 }
 
