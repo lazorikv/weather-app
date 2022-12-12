@@ -1,36 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import "../style/forecast.css";
 
-function Forecast(props) {
+const Forecast = (props) => {
     let forecast = props.forecast;
-    const temp = forecast.temp;
-    // const humidity = forecast.humidity;
-    // const pressure = forecast.pressure;
-    // const country = props.country;
-    // const sunset = forecast.sunset;
-    // const {name} = props.name;
-    // const {speed} = forecast.wind_speed;
+    const temp = forecast.temp.day.toFixed();
+    const humidity = forecast.humidity;
+    const pressure = forecast.pressure;
+    const speed = forecast.wind_speed;
+    const sunset = forecast.sunset;
+    const min_temp = forecast.temp.min.toFixed();
+    const max_temp = forecast.temp.max.toFixed();
     const {main: weatherType} = forecast.weather[0];
     let timestamp = forecast.dt;
     let a = new Date(timestamp * 1000);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const year = a.getFullYear();
     const month = months[a.getMonth()];
+    const detailMonth = a.getMonth() + 1;
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dayOfWeek = days[a.getDay()]
     const date = a.getDate();
-    const timeInfo = date + ' ' + month + ' ' + year;
-
-    // const myNewWeatherInfo = {
-    //       temp,
-    //       humidity,
-    //       pressure,
-    //       weatherType,
-    //       name,
-    //       speed,
-    //       country,
-    //       sunset,
-    //     timeInfo
-    //     }
-    // const [tempInfo, setTempInfo] = useState({myNewWeatherInfo})
-
+    const detailTime = date + "/" + detailMonth + "/" + year;
+    const timeInfo = date + ' '  + month + ' ' + year;
 
     const [weatherState, setWeatherState] = useState("");
 
@@ -52,6 +43,9 @@ function Forecast(props) {
           case "Rain":
             setWeatherState("wi-day-rain");
             break;
+          case "Snow":
+            setWeatherState("wi-snow");
+            break;
 
           default:
             setWeatherState("wi-day-sunny");
@@ -60,14 +54,35 @@ function Forecast(props) {
       }
     }, [weatherType]);
 
+    const handleClick = () => {
+        const myNewWeatherInfo = {
+        detailTime,
+        temp,
+        min_temp,
+        max_temp,
+        humidity,
+        pressure,
+        weatherType,
+        nameData: props.allWeatherData.name,
+        speed,
+        countryData: props.allWeatherData.country,
+        sunset
+      };
+        props.setTempInfo(myNewWeatherInfo);
+    }
+
     return (
         <>
-            <div className="day-item">
+            <div onClick={handleClick} className="day-item">
                 <div className='weatherIcon'>
               <i className={`wi ${weatherState}`}>
                   </i></div>
-                <div>{temp.day}&deg;</div>
-                <div>{timeInfo}</div>
+                <div className="forecastData">
+                    <div className="temperature">{temp}&deg;</div>
+                    <div><b>{dayOfWeek}</b></div>
+                <div className="timeInfo">{timeInfo}</div>
+                </div>
+
             </div>
 
         </>

@@ -1,0 +1,34 @@
+.days .weatherIcon {
+  height: 40%;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background: #fafafa;
+  font-family: weathericons;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 15px;
+}
+.days .day-item {
+  transition: box-shadow .3s;
+  width: 120px;
+  height: 130px;
+  border: none;
+  border-radius: 15px;
+  background-color: #fafafa;
+}
+.days .day-item:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
+  transform: translateY(-3px);
+  cursor: pointer;
+}
+.days .day-item .forecastData {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.days .day-item .forecastData .temperature {
+  font-size: 25px;
+  margin-top: -15px;
+  margin-left: 5px;
+}

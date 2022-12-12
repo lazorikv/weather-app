@@ -1,96 +1,125 @@
-import React, { useEffect, useState } from 'react'
-import '../style/style.css'
-import WeatherDetails from './WeatherDetails'
-import Forecast from './Forecast'
+import React, { useEffect, useState } from "react";
+import "../style/style.css";
+import WeatherDetails from "./WeatherDetails";
+import Forecast from "./Forecast";
+import {AppContext} from "../context";
+import Header from "./Header";
 
-function SearchMain() {
-    const [searchTerm, setSearchTerm] = useState('Kharkiv')
-    const [tempInfo, setTempInfo] = useState({})
-    const [forecastData, setForecastData] = useState({})
-    const [nameData, setNameData] = useState({})
-    const [countryData, setCountryData] = useState({})
-    const [lonData, setLonData] = useState({})
-    const [latData, setLatData] = useState({})
+const SearchMain = () => {
+  const [searchTerm, setSearchTerm] = useState("Kharkiv");
+  const [tempInfo, setTempInfo] = useState({});
+  const [forecastData, setForecastData] = useState({});
+  const [allWeatherData, setAllWeatherData] = useState(null);
 
-
-    const getWeatherDetails  = async() => {
-
-      try {
-        let url =`https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&units=metric&appid=edfbb71f85e1fcfb2f25c50ebd685682`
-        let res = await fetch(url);
-        let data = await res.json();
-        const {temp, humidity, pressure} = data.main;
-        const {main: weatherType} = data.weather[0];
-        const {name} = data;
-        setNameData(name)
-        const {speed} = data.wind;
-        const country = data.sys.country;
-        setCountryData(country)
-        let lon = data.coord.lon;
-        setLonData(lon)
-        let lat = data.coord.lat;
-        setLatData(lat)
-
-
-      } catch (error) {
-        //console.log(error)
-      }
+  const getWeatherDetails = async () => {
+    try {
+      let url = `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&units=metric&appid=edfbb71f85e1fcfb2f25c50ebd685682`;
+      let res = await fetch(url);
+      let data = await res.json();
+      const { temp, humidity, pressure } = data.main;
+      const { main: weatherType } = data.weather[0];
+      const { name } = data;
+      const { speed } = data.wind;
+      const country = data.sys.country;
+      let lon = data.coord.lon;
+      let lat = data.coord.lat;
+      setAllWeatherData({
+        lat,
+        lon,
+        country,
+        speed,
+        name,
+        weatherType,
+        humidity,
+        temp,
+        pressure
+      });
+    } catch (error) {
+      console.log(error)
     }
+  };
 
-    const getForecastDetails = async() => {
-        await getWeatherDetails()
-      try {
-            console.log(latData, lonData)
-            let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${latData}&lon=${lonData}&exclude=hourly,minutely,current&units=metric&appid=edfbb71f85e1fcfb2f25c50ebd685682`
-            let res = await fetch(url);
-            let forecast_data = await res.json();
-            let forecast = forecast_data.daily;
-            const {main: weatherType} = forecast[0].weather[0];
-            const temp = forecast[0].temp;
-            const humidity = forecast[0].humidity;
-            const pressure = forecast[0].pressure;
-            const speed = forecast[0].wind_speed;
-            const sunset = forecast[0].sunset;
+  const getForecastDetails = async () => {
+    try {
+      let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${allWeatherData.lat}&lon=${allWeatherData.lon}&exclude=hourly,minutely,current&units=metric&appid=edfbb71f85e1fcfb2f25c50ebd685682`;
+      let res = await fetch(url);
+      let forecast_data = await res.json();
+      let forecast = forecast_data.daily.slice(0, 5);
+      let detailTime = null;
+      const min_temp = forecast[0].temp.min.toFixed();
+      const max_temp = forecast[0].temp.max.toFixed();
+      const { main: weatherType } = forecast[0].weather[0];
+      const temp = forecast[0].temp.day.toFixed();
+      const humidity = forecast[0].humidity;
+      const pressure = forecast[0].pressure;
+      const speed = forecast[0].wind_speed;
+      const sunset = forecast[0].sunset;
 
-            const myNewWeatherInfo = {
-              temp,
-              humidity,
-              pressure,
-              weatherType,
-              nameData,
-              speed,
-              countryData,
-              sunset
-            }
-            setTempInfo(myNewWeatherInfo)
-            setForecastData(forecast_data)
-        } catch (error) {
-            console.log(error)
-        }
+      const myNewWeatherInfo = {
+        detailTime,
+        temp,
+        min_temp,
+        max_temp,
+        humidity,
+        pressure,
+        weatherType,
+        nameData: allWeatherData.name,
+        speed,
+        countryData: allWeatherData.country,
+        sunset
+      };
+      setTempInfo(myNewWeatherInfo);
+      setForecastData(forecast);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    useEffect(() =>{
-      getForecastDetails()
-    }, [latData])
+  useEffect(() => {
+    if (allWeatherData === null) getWeatherDetails();
+  }, [allWeatherData]);
 
-    const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-        getForecastDetails()
+
+  useEffect(() => {
+    if (allWeatherData !== null) getForecastDetails();
+  }, [allWeatherData]);
+
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      getWeatherDetails();
     }
-  }
+  };
+
 
   return (
-   <> <header>Text</header>
-       <div className='wrap'>
-      <div className='search'>
-          <input className="searchTerm" onKeyDown={handleKeyDown} type='search' placeholder='Type city' id='search' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
-      <button className='searchButton' onClick={getForecastDetails}>Search</button>
+     <AppContext.Provider
+         value = {{setTempInfo, allWeatherData, setSearchTerm, searchTerm}}
+    >
+      {" "}
+      <Header setSearchTerm={setSearchTerm} searchTerm={searchTerm}/>
+      <div className="wrap">
+        <div className="search">
+          <input
+            className="searchTerm"
+            onKeyDown={handleKeyDown}
+            type="search"
+            placeholder="Type city"
+            id="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="searchButton" onClick={getWeatherDetails}>
+            Search
+          </button>
+        </div>
       </div>
-    </div>
-       <div className="days">
+      <div className="days">
+        {Array.isArray(forecastData) ? forecastData.map((item) => <Forecast forecast={item} setTempInfo={setTempInfo} allWeatherData={allWeatherData}/>) : null}
            </div>
-   <WeatherDetails {...tempInfo} /></>
-  )
+      <WeatherDetails {...tempInfo} />
+      </AppContext.Provider>
+  );
 }
 
 export default SearchMain;
