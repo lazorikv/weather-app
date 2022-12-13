@@ -4,18 +4,22 @@ import "../style/header.css";
 const Header = (props) => {
 
     const [open, setOpen] = useState(false);
-    const [favoritePlaces, setFavoritePlaces] = useState([])
+    let [favoritePlaces, setFavoritePlaces] = useState(() => {
+        const saved = localStorage.getItem("favorites");
+        return saved || [];
+    })
+
     const handleOpen = () => {
     setOpen(!open);
   };
 
   const addPlaceToCookieFunction = () => {
-      let places = localStorage.getItem('favorites');
-      let check = places.includes(props.searchTerm)
+      let check = false;
+      if (favoritePlaces !== null) {
+          check = favoritePlaces.includes(props.searchTerm)
+      }
       if (check === false) {
           favoritePlaces.push(props.searchTerm)
-    setFavoritePlaces(favoritePlaces)
-    localStorage.setItem('favorites', JSON.stringify(favoritePlaces))
       }
 
   }
@@ -24,12 +28,14 @@ const Header = (props) => {
       props.setSearchTerm(place)
   }
 
-  const favoritesList = () => {
-      return JSON.parse(localStorage.getItem('favorites'));
+  const removeFavorite = (item) => {
+      const newItems = favoritePlaces.filter(items => items !== item)
+      setFavoritePlaces(newItems)
   }
 
+
   useEffect(
-      () => {favoritesList()}, favoritePlaces
+      () => {localStorage.setItem('favorites', favoritePlaces)}, [favoritePlaces]
   )
 
 
@@ -42,9 +48,10 @@ const Header = (props) => {
       <button className="addToFavorite favorite-btn" onClick={handleOpen}>Favorites</button>
       {open ? (
         <ul className="menu">
-            {favoritesList().map((item) => (<li className="menu-item">
-            <button onClick={() => searchPlace(item)}>{item}</button>
-          </li>))}
+            {favoritePlaces.length ? favoritePlaces.map((item) => (<li className="menu-item">
+            <button className="item-text" onClick={() => searchPlace(item)}>{item}</button>
+                <img onClick={() => removeFavorite(item)} src="remove.svg" alt="remove"/>
+          </li>)) : <li className="menu-item">No Favorites</li>}
         </ul>
       ) : null}
     </div>

@@ -115,7 +115,7 @@ const SearchMain = () => {
         </div>
       </div>
       <div className="days">
-        {Array.isArray(forecastData) ? forecastData.map((item) => <Forecast forecast={item} setTempInfo={setTempInfo} allWeatherData={allWeatherData}/>) : null}
+        {Array.isArray(forecastData) ? forecastData.map((item) => <Forecast key={item.dt} forecast={item} setTempInfo={setTempInfo} allWeatherData={allWeatherData}/>) : null}
            </div>
       <WeatherDetails {...tempInfo} />
       </AppContext.Provider>

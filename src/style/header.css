@@ -3,7 +3,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: -100px;
+  margin-top: -70px;
 }
 .favorites .addToFavorite {
   width: 120%;
@@ -38,8 +38,14 @@
   z-index: 1;
 }
 .menu > li {
+  display: flex;
+  height: 30px;
+  padding-left: 5px;
+  justify-content: space-between;
+  align-items: center;
   margin: 0;
   background-color: white;
+  cursor: pointer;
 }
 .menu > li:hover {
   background-color: lightblue;
@@ -51,8 +57,22 @@
   background: none;
   color: inherit;
   border: none;
-  padding: 5px;
   margin: 0;
   font: inherit;
   cursor: pointer;
 }
+
+.menu > li > img {
+  cursor: pointer;
+  height: 15px;
+  margin-right: 8px;
+
+  transition: 0.2s all;
+}
+
+.menu > li > img:active {
+            transform: scale(0.93);
+            /* Scaling button to 0.98 to its original size */
+            box-shadow: 2px 2px 1px 1px rgba(0, 0, 0, 0.24);
+            /* Lowering the shadow */
+        }
