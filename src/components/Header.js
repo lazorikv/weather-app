@@ -1,13 +1,24 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import "../style/header.css";
 
 const Header = (props) => {
 
     const [open, setOpen] = useState(false);
+    const catMenu = useRef(null)
+    const [showElement, setShowElement] = useState(false);
+
     let [favoritePlaces, setFavoritePlaces] = useState(() => {
         const saved = localStorage.getItem("favorites");
         return saved || [];
     })
+
+    const closeOpenMenus = (e) => {
+        if (catMenu.current && open && !catMenu.current.contains(e.target)) {
+            setOpen(false)
+        }
+    }
+
+    document.addEventListener('mousedown', closeOpenMenus)
 
     const handleOpen = () => {
     setOpen(!open);
@@ -20,6 +31,11 @@ const Header = (props) => {
       }
       if (check === false) {
           favoritePlaces.push(props.searchTerm)
+          setShowElement(true)
+
+          setTimeout(() => {
+           setShowElement(false);
+       }, 2000);
       }
 
   }
@@ -44,7 +60,10 @@ const Header = (props) => {
             <div>
                 <button className="addToFavorite" onClick={addPlaceToCookieFunction}>Add to Favorite</button>
             </div>
-            <div className="dropdown">
+            <div>
+                {showElement && <h3 className="messageAdd">Place added to Favorites</h3>}
+            </div>
+            <div ref={catMenu} className="dropdown">
       <button className="addToFavorite favorite-btn" onClick={handleOpen}>Favorites</button>
       {open ? (
         <ul className="menu">

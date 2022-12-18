@@ -5,6 +5,11 @@
   align-items: center;
   margin-top: -70px;
 }
+
+.messageAdd {
+  color: #F2F7A1;
+}
+
 .favorites .addToFavorite {
   width: 120%;
   height: 40px;
