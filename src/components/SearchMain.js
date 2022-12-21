@@ -4,6 +4,7 @@ import WeatherDetails from "./WeatherDetails";
 import Forecast from "./Forecast";
 import {AppContext} from "../context";
 import Header from "./Header";
+import {roundValue} from "../utils";
 
 const SearchMain = () => {
   const [searchTerm, setSearchTerm] = useState("Kharkiv");
@@ -46,10 +47,10 @@ const SearchMain = () => {
       let forecast_data = await res.json();
       let forecast = forecast_data.daily.slice(0, 5);
       let detailTime = null;
-      const min_temp = forecast[0].temp.min.toFixed();
-      const max_temp = forecast[0].temp.max.toFixed();
+      const min_temp = roundValue(forecast[0].temp.min);
+      const max_temp = roundValue(forecast[0].temp.max);
       const { main: weatherType } = forecast[0].weather[0];
-      const temp = forecast[0].temp.day.toFixed();
+      const temp = roundValue(forecast[0].temp.day);
       const humidity = forecast[0].humidity;
       const pressure = forecast[0].pressure;
       const speed = forecast[0].wind_speed;

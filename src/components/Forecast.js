@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import {roundValue} from "../utils";
 import "../style/forecast.css";
 
 const Forecast = (props) => {
     let forecast = props.forecast;
-    const temp = forecast.temp.day.toFixed();
+    const temp = roundValue(forecast.temp.day);
     const humidity = forecast.humidity;
     const pressure = forecast.pressure;
     const speed = forecast.wind_speed;
     const sunset = forecast.sunset;
-    const min_temp = forecast.temp.min.toFixed();
-    const max_temp = forecast.temp.max.toFixed();
+    const min_temp = roundValue(forecast.temp.min);
+    const max_temp = roundValue(forecast.temp.max);
     const {main: weatherType} = forecast.weather[0];
     let timestamp = forecast.dt;
     let a = new Date(timestamp * 1000);
